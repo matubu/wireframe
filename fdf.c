@@ -6,7 +6,7 @@
 /*   By: mberger- <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/29 17:05:47 by mberger-          #+#    #+#             */
-/*   Updated: 2021/10/29 17:57:54 by mberger-         ###   ########.fr       */
+/*   Updated: 2021/10/29 18:07:47 by mberger-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 #include <mlx.h>
 #include <math.h>
 
-#define SIZE 400
+#define SIZE 800
 
 typedef struct s_vec2 {
 	int	x;
