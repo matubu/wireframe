@@ -6,7 +6,7 @@
 /*   By: mberger- <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/29 17:05:47 by mberger-          #+#    #+#             */
-/*   Updated: 2021/10/29 18:07:47 by mberger-         ###   ########.fr       */
+/*   Updated: 2021/11/01 15:30:54 by matubu           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,8 @@
 #include <math.h>
 
 #define SIZE 800
+//#define PI 3.14159265358979323846
+//#define PI2 PI * 2
 
 typedef struct s_vec2 {
 	int	x;
@@ -27,10 +29,35 @@ typedef struct s_vec3 {
 	int	z;
 }	t_vec3;
 
+typedef struct s_map {
+	t_vec2	size;
+	t_vec2	off;
+	int		*grid;
+	int		block;
+}	t_map;
+
 typedef struct s_mlx_data {
 	void	*ptr;
 	void	*win;
+	void	*img;
+	int		*buf;
+	int		width;
+	int		height;
+	t_map	map;
 }	t_mlx_data;
+
+typedef struct s_rot {
+	float	x;
+	float	y;
+	float	z;
+	float	cx;
+	float	sx;
+	float	cy;
+	float	sy;
+	float	cz;
+	float	sz;
+	t_vec3	matrix[2];
+}	t_rot;
 
 int	reduce(int *a)
 {
@@ -52,16 +79,12 @@ void	mlx_draw_line(t_mlx_data *mlx, t_vec2 a, t_vec2 b, int rgb)
 		return ;
 	if (abs(dx) > abs(dy))
 		while (reduce(&dx))
-			mlx_pixel_put(mlx->ptr, mlx->win,
-					a.x - dx,
-					a.y - dy * dx / (a.x - b.x),
-					rgb);
+			mlx->buf[(a.x - dx)
+				+ (a.y - dy * dx / (a.x - b.x)) * mlx->width] = rgb;
 	else
 		while (reduce(&dy))
-			mlx_pixel_put(mlx->ptr, mlx->win,
-					a.x - dx * dy / (a.y - b.y),
-					a.y - dy,
-					rgb);
+			mlx->buf[(a.x - dx * dy / (a.y - b.y))
+				+ (a.y - dy) * mlx->width] = rgb;
 }
 
 int	mlx_rgbtoi(int r, int g, int b)
@@ -73,7 +96,7 @@ int	mlx_rgbtoi(int r, int g, int b)
 	);
 }
 
-const int	map[4 * 4] = {
+int	map[4 * 4] = {
 	0,	0,	0,	0,
 	0,	10,	10,	0,
 	0,	10,	0,	0,
@@ -87,86 +110,134 @@ int	max(int a, int b)
 	return (b);
 }
 
-void	mlx_draw_3d_line(t_mlx_data *mlx, t_vec3 rot, t_vec3 a, t_vec3 b)
+int	min(int a, int b)
 {
-	(void)rot;
-	mlx_draw_line(mlx, (t_vec2){a.x + a.z, a.y - a.z * 5}, (t_vec2){b.x + b.z, b.y - b.z * 5}, 0x00FFFFFF);
+	if (a > b)
+		return (b);
+	return (a);
 }
 
-void	mlx_project(t_mlx_data *mlx, int *map, t_vec2 map_size, t_vec3 rot)
+t_vec2	mlx_rotate(t_vec3 p, t_rot *r)
+{
+	t_vec2	vec;
+
+	vec.x = p.x * r->matrix[0].x + p.y * r->matrix[0].y + p.z * r->matrix[0].z;
+	vec.y = p.x * r->matrix[1].x + p.y * r->matrix[1].y + p.z * r->matrix[1].z;
+	return (vec);
+}
+
+void	mlx_draw_3d_line(t_mlx_data *mlx, t_rot *rot, t_vec2 a, t_vec2 b)
+{
+	const t_vec3	a3 = {
+		a.x * mlx->map.block + mlx->map.off.x,
+		a.y * mlx->map.block + mlx->map.off.y,
+		mlx->map.grid[a.x + a.y * mlx->map.size.x]
+	};
+	const t_vec3	b3 = {
+		b.x * mlx->map.block + mlx->map.off.x,
+		b.y * mlx->map.block + mlx->map.off.y,
+		mlx->map.grid[b.x + b.y * mlx->map.size.x]
+	};
+
+	mlx_draw_line(mlx, mlx_rotate(a3, rot), mlx_rotate(b3, rot), 0x00dd88dd);
+}
+
+void	mlx_project(t_mlx_data *mlx, t_rot rot)
 {
 	t_vec2	pos;
-	t_vec2	off;
-	int		block_size;
 
-	block_size = SIZE / max(map_size.x, map_size.y);
-	off.x = SIZE / map_size.x / 2;
-	off.y = SIZE / map_size.y / 2;
-
-	pos.y = map_size.y;
+	pos.y = mlx->map.size.y;
 	while (pos.y--)
 	{
-		pos.x = map_size.x;
+		pos.x = mlx->map.size.x;
 		while (--pos.x)
-			mlx_draw_3d_line(mlx,
-					rot,
-					(t_vec3){
-						pos.x * block_size + off.x,
-						pos.y * block_size + off.y,
-						map[pos.y * map_size.x + pos.x]
-						},
-					(t_vec3){
-						(pos.x - 1) * block_size + off.x,
-						pos.y * block_size + off.y,
-						map[pos.y * map_size.x + pos.x - 1]
-						});
+			mlx_draw_3d_line(mlx, &rot, pos, (t_vec2){pos.x - 1, pos.y});
 	}
-
-	pos.y = map_size.y;
+	pos.y = mlx->map.size.y;
 	while (--pos.y)
 	{
-		pos.x = map_size.x;
+		pos.x = mlx->map.size.x;
 		while (pos.x--)
-			mlx_draw_3d_line(mlx,
-					rot,
-					(t_vec3){
-						pos.x * block_size + off.x,
-						pos.y * block_size + off.y,
-						map[pos.y * map_size.x + pos.x]
-						},
-					(t_vec3){
-						pos.x * block_size + off.x,
-						(pos.y - 1) * block_size + off.y,
-						map[pos.y * map_size.x + pos.x - map_size.x]
-						});
+			mlx_draw_3d_line(mlx, &rot, pos, (t_vec2){pos.x, pos.y - 1});
 	}
 
 }
 
+void	mlx_new_gradient(t_mlx_data *mlx)
+{
+	int	x;
+	int	y;
+
+	y = -1;
+	while (++y < mlx->height)
+	{
+		x = -1;
+		while (++x < mlx->width)
+			mlx->buf[y * mlx->width + x] = mlx_rgbtoi(
+					(float)x / (float)SIZE * 192.0f + 64,
+					0,
+					(float)y / (float)SIZE * 192.0f + 64);
+	}
+}
+
+void	mlx_init_map(t_mlx_data *mlx, int *map, int width, int height)
+{
+	mlx->map.grid = map;
+	mlx->map.size = (t_vec2){width, height};
+	mlx->map.block = min(mlx->width / width, mlx->height / height);
+	mlx->map.off.x = mlx->width / width / 2;
+	mlx->map.off.y = mlx->height / height / 2;
+}
+
+t_rot	create_rot(float x, float y, float z)
+{
+	t_rot	r;
+	
+	r.x = x;
+	r.y = y;
+	r.z = z;
+	r.cx = cos(x);
+	r.sx = sin(x);
+	r.cy = cos(y);
+	r.sy = sin(y);
+	r.cz = cos(z);
+	r.sz = sin(z);
+	r.matrix[0] = (t_vec3){
+		r.cx * r.cy,
+		r.cx * r.sy * r.sz - r.sx * r.cz,
+		r.cx * r.sy * r.cz + r.sx * r.sz};
+	r.matrix[1] = (t_vec3){
+		r.sx * r.cy,
+		r.sx * r.sy * r.sz + r.cx * r.cz,
+		r.sx * r.sy * r.cz - r.cx * r.sz};
+	return (r);
+}
+
+//TODO leaks ? exit properly on close
 int	main(void)
 {
 	t_mlx_data	mlx;
-	int			x;
-	int			y;
+	int			null;
 
 	mlx.ptr = mlx_init();
 	if (mlx.ptr == NULL)
 		return (1);
-	mlx.win = mlx_new_window(mlx.ptr, SIZE, SIZE, "FDF");
+	mlx.width = SIZE;
+	mlx.height = SIZE;
+	mlx.win = mlx_new_window(mlx.ptr, mlx.width, mlx.height, "FDF");
 	if (mlx.win == NULL)
 		return (1);
-	y = -1;
-	while (++y < SIZE)
+	mlx.img = mlx_new_image(mlx.ptr, mlx.width, mlx.height);
+	if (mlx.img == NULL)
 	{
-		x = -1;
-		while (++x < SIZE)
-			mlx_pixel_put(mlx.ptr, mlx.win, x, y, mlx_rgbtoi(
-					(float)x / (float)SIZE * 192.0f + 64,
-					0,
-					(float)y / (float)SIZE * 192.0f + 64));
+		mlx_destroy_window(mlx.ptr, mlx.win);
+		return (1);
 	}
-	//mlx_draw_line(&mlx, (t_vec2){10, 100}, (t_vec2){10, 10}, 0x00FFFFFF);
-	mlx_project(&mlx, (int *)map, (t_vec2){4, 4}, (t_vec3){0, 0, 0});
+	mlx.buf = (int *)mlx_get_data_addr(mlx.img, &null, &null, &null);
+	mlx_new_gradient(&mlx);
+	mlx_init_map(&mlx, map, 4, 4);
+	mlx_project(&mlx, create_rot(0.0001, 0, 0));
+	mlx_put_image_to_window(mlx.ptr, mlx.win, mlx.img, 0, 0);
 	mlx_loop(mlx.ptr);
 	return (0);
 }
