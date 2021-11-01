@@ -14,6 +14,10 @@ EOC = \033[0m
 
 all: $(NAME)
 
+run: all
+	@$(ECHO) "$(BLU)● Launching $(NAME) 💪$(EOC)"
+	@./$(NAME)
+
 bin:
 	@$(ECHO) "$(GRE)● Creating /$(BIN) 📁$(EOC)"
 	@mkdir -p $(BIN)
@@ -41,4 +45,6 @@ fclean: clean
 
 re: fclean all
 
-.PHONY: all clean fclean re
+rerun: fclean run
+
+.PHONY: all run clean fclean re rerun

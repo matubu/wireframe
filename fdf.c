@@ -1,10 +1,11 @@
 #include "fdf.h"
 
-int	map[4 * 4] = {
-	0,	0,	0,	0,
-	0,	10,	20,	0,
-	0,	10,	-5,	0,
-	0,	0,	0,	0
+int	map[5 * 5] = {
+	0,	0,	0,	0,	5,
+	0,	10,	20,	0,	0,
+	0,	10,	-5,	0,	0,
+	0,	10,	-5,	0,	0,
+	0,	0,	0,	0,	0
 };
 
 void	mlx_draw_3d_line(t_mlx_data *mlx, t_rot *rot, t_vec2 a, t_vec2 b)
@@ -53,17 +54,27 @@ void	mlx_init_map(t_mlx_data *mlx, int *map, int width, int height)
 	mlx->map.off.y = mlx->height / height / 2;
 }
 
-int	mouse_move(int x, int y, t_mlx_data *mlx)
+int	on_key_press(int key, t_mlx_data *mlx)
+{
+	if (key == 65307)
+	{
+		mlx_destroy_window(mlx->ptr, mlx->win);
+		exit(0);
+	}
+	return (0);
+}
+
+int	on_mouse_move(int x, int y, t_mlx_data *mlx)
 {
 	mlx->buf[x + y * mlx->width] = 0x00ffffff;
 	mlx_put_image_to_window(mlx->ptr, mlx->win, mlx->img, 0, 0);
-	return (1);
+	return (0);
 }
 
 //TODO leaks ? exit properly on close
 //TODO use float between -.5 and .5 for position of point for center rotation
 //TODO parsing
-//TODO bonus (translate (mouse move) + rotate (middle mouse))
+//TODO bonus (translate (shift middle mouse move) + rotate (middle mouse move))
 int	main(void)
 {
 	t_mlx_data	mlx;
@@ -85,10 +96,11 @@ int	main(void)
 	}
 	mlx.buf = (int *)mlx_get_data_addr(mlx.img, &null, &null, &null);
 	mlx_new_gradient(&mlx);
-	mlx_init_map(&mlx, map, 4, 4);
+	mlx_init_map(&mlx, map, 5, 5);
 	mlx_project(&mlx, create_rot(.2, .2, 1));
 	mlx_put_image_to_window(mlx.ptr, mlx.win, mlx.img, 0, 0);
-	mlx_hook(mlx.win, 6, 64, mouse_move, (void *)&mlx);
+	mlx_key_hook(mlx.win, on_key_press, (void *)&mlx);
+	mlx_hook(mlx.win, 6, 64, on_mouse_move, (void *)&mlx);
 	mlx_loop(mlx.ptr);
 	return (0);
 }
