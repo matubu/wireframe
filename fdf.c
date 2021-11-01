@@ -1,11 +1,12 @@
 #include "fdf.h"
 
-int	map[5 * 5] = {
-	0,	0,	0,	0,	5,
-	0,	10,	20,	0,	0,
-	0,	10,	-5,	0,	0,
-	0,	10,	-5,	0,	0,
-	0,	0,	0,	0,	0
+int	map[6 * 6] = {
+	0,	0,	0,	0,	5,	0,
+	0,	10,	20,	0,	0,	0,
+	0,	10,	-5,	0,	0,	0,
+	0,	10,	-5,	0,	0,	0,
+	0,	10,	-5,	0,	0,	0,
+	0,	0,	0,	0,	0,	0
 };
 
 void	mlx_draw_3d_line(t_mlx_data *mlx, t_rot *rot, t_vec2 a, t_vec2 b)
@@ -97,7 +98,7 @@ int	main(void)
 		clean_exit(&mlx);
 	mlx.buf = (int *)mlx_get_data_addr(mlx.img, &null, &null, &null);
 	mlx_new_gradient(&mlx);
-	mlx_init_map(&mlx, map, 5, 5);
+	mlx_init_map(&mlx, map, 6, 6);
 	mlx_project(&mlx, create_rot(.2, .2, 1));
 	mlx_put_image_to_window(mlx.ptr, mlx.win, mlx.img, 0, 0);
 	mlx_key_hook(mlx.win, on_key_press, (void *)&mlx);
