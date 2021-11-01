@@ -54,13 +54,17 @@ void	mlx_init_map(t_mlx_data *mlx, int *map, int width, int height)
 	mlx->map.off.y = mlx->height / height / 2;
 }
 
+int	clean_exit(t_mlx_data *mlx)
+{
+	mlx_destroy_window(mlx->ptr, mlx->win);
+	exit(0);
+	return (1);
+}
+
 int	on_key_press(int key, t_mlx_data *mlx)
 {
 	if (key == 65307)
-	{
-		mlx_destroy_window(mlx->ptr, mlx->win);
-		exit(0);
-	}
+		clean_exit(mlx);
 	return (0);
 }
 
@@ -71,7 +75,7 @@ int	on_mouse_move(int x, int y, t_mlx_data *mlx)
 	return (0);
 }
 
-//TODO leaks ? exit properly on close
+//TODO leaks
 //TODO use float between -.5 and .5 for position of point for center rotation
 //TODO parsing
 //TODO bonus (translate (shift middle mouse move) + rotate (middle mouse move))
@@ -90,17 +94,15 @@ int	main(void)
 		return (1);
 	mlx.img = mlx_new_image(mlx.ptr, mlx.width, mlx.height);
 	if (mlx.img == NULL)
-	{
-		mlx_destroy_window(mlx.ptr, mlx.win);
-		return (1);
-	}
+		clean_exit(&mlx);
 	mlx.buf = (int *)mlx_get_data_addr(mlx.img, &null, &null, &null);
 	mlx_new_gradient(&mlx);
 	mlx_init_map(&mlx, map, 5, 5);
 	mlx_project(&mlx, create_rot(.2, .2, 1));
 	mlx_put_image_to_window(mlx.ptr, mlx.win, mlx.img, 0, 0);
 	mlx_key_hook(mlx.win, on_key_press, (void *)&mlx);
-	mlx_hook(mlx.win, 6, 64, on_mouse_move, (void *)&mlx);
+	mlx_hook(mlx.win, 17, 0, clean_exit, &mlx);
+	mlx_hook(mlx.win, 6, 64, on_mouse_move, &mlx);
 	mlx_loop(mlx.ptr);
 	return (0);
 }
