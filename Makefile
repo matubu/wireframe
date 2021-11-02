@@ -1,5 +1,5 @@
 NAME = fdf
-OBJ = bin/fdf.o bin/math.o bin/mlx.o
+OBJ = bin/fdf.o bin/math.o bin/mlx.o bin/parsing.o
 BIN = bin
 FLAGS = -Wall -Wextra -Werror
 

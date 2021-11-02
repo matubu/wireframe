@@ -1,4 +1,33 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   mlx.c                                              :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: mberger- <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2021/11/02 14:07:26 by mberger-          #+#    #+#             */
+/*   Updated: 2021/11/02 14:07:28 by mberger-         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "fdf.h"
+
+static inline void	setpix(t_mlx_data *mlx, int x, int y, int rgb)
+{
+	if (x < 0 || x >= mlx->width
+		|| y < 0 || y >= mlx->height)
+		return ;
+	mlx->buf[x + y * mlx->width] = rgb;
+}
+
+static inline int	reduce(int *a)
+{
+	if (*a > 0)
+		return ((*a)--);
+	if (*a < 0)
+		return ((*a)++);
+	return (0);
+}
 
 void	mlx_draw_line(t_mlx_data *mlx, t_vec2 a, t_vec2 b, int rgb)
 {
@@ -11,12 +40,10 @@ void	mlx_draw_line(t_mlx_data *mlx, t_vec2 a, t_vec2 b, int rgb)
 		return ;
 	if (abs(dx) > abs(dy))
 		while (reduce(&dx))
-			mlx->buf[(a.x - dx)
-				+ (a.y - dy * dx / (a.x - b.x)) * mlx->width] = rgb;
+			setpix(mlx, a.x - dx, (a.y - dy * dx / (a.x - b.x)), rgb);
 	else
 		while (reduce(&dy))
-			mlx->buf[(a.x - dx * dy / (a.y - b.y))
-				+ (a.y - dy) * mlx->width] = rgb;
+			setpix(mlx, a.x - dx * dy / (a.y - b.y), (a.y - dy), rgb);
 }
 
 int	mlx_rgbtoi(int r, int g, int b)
