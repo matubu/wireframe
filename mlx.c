@@ -6,7 +6,7 @@
 /*   By: mberger- <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/02 14:07:26 by mberger-          #+#    #+#             */
-/*   Updated: 2021/11/02 14:07:28 by mberger-         ###   ########.fr       */
+/*   Updated: 2021/11/02 16:20:56 by mberger-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,9 @@ void	mlx_draw_line(t_mlx_data *mlx, t_vec2 a, t_vec2 b, int rgb)
 
 	dx = a.x - b.x;
 	dy = a.y - b.y;
-	if (dx == 0 && dy == 0)
+	if ((dx == 0 && dy == 0)
+		|| ((a.x < 0 || a.y < 0 || a.x >= mlx->width || a.y >= mlx->height)
+			&& (b.x < 0 || b.y < 0 || b.x >= mlx->width || b.y >= mlx->height)))
 		return ;
 	if (abs(dx) > abs(dy))
 		while (reduce(&dx))
@@ -46,7 +48,7 @@ void	mlx_draw_line(t_mlx_data *mlx, t_vec2 a, t_vec2 b, int rgb)
 			setpix(mlx, a.x - dx * dy / (a.y - b.y), (a.y - dy), rgb);
 }
 
-int	mlx_rgbtoi(int r, int g, int b)
+int	rgb(int r, int g, int b)
 {
 	return (
 		((r & 255) << 16)
@@ -65,7 +67,7 @@ void	mlx_new_gradient(t_mlx_data *mlx)
 	{
 		x = -1;
 		while (++x < mlx->width)
-			mlx->buf[y * mlx->width + x] = mlx_rgbtoi(
+			mlx->buf[y * mlx->width + x] = rgb(
 					(float)x / (float)SIZE * 192.0f + 64,
 					0,
 					(float)y / (float)SIZE * 192.0f + 64);

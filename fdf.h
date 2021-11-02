@@ -6,18 +6,24 @@
 /*   By: mberger- <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/02 14:07:11 by mberger-          #+#    #+#             */
-/*   Updated: 2021/11/02 14:07:13 by mberger-         ###   ########.fr       */
+/*   Updated: 2021/11/02 16:12:52 by mberger-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef FDF_H
 # define FDF_H
 
-#include <stdlib.h>
-#include <mlx.h>
-#include <math.h>
+# include <stdlib.h>
+# include <mlx.h>
+# include <math.h>
 
 # define SIZE 800
+# define PI 3.1415926535
+
+typedef enum e_mouse {
+	LEFT_MOUSE=1,
+	MIDDLE_MOUSE=3
+}	t_mouse;
 
 typedef struct s_vec2 {
 	int	x;
@@ -59,18 +65,26 @@ typedef struct s_mlx_data {
 	t_map	map;
 	t_rot	rot;
 	float	zoom;
-	int		shift;
+	t_mouse	button;
 	t_vec2	pos;
 }	t_mlx_data;
 
 int		min(int a, int b);
 int		max(int a, int b);
 t_rot	create_rot(float x, float y, float z);
-int		mlx_rgbtoi(int r, int g, int b);
+int		clean_exit(t_mlx_data *mlx);
+
+int		rgb(int r, int g, int b);
 t_vec2	mlx_rotate(t_mlx_data *mlx, t_vec3 p);
 void	mlx_draw_line(t_mlx_data *mlx, t_vec2 a, t_vec2 b, int rgb);
 void	mlx_new_gradient(t_mlx_data *mlx);
+
+void	mlx_update(t_mlx_data *mlx);
 void	mlx_parse_map(t_mlx_data *mlx, int argc, char **argv);
-int		clean_exit(t_mlx_data *mlx);
+
+int		on_key_up(int key, t_mlx_data *mlx);
+int		on_mouse_move(int x, int y, t_mlx_data *mlx);
+int		on_button_down(int button, int x, int y, t_mlx_data *mlx);
+int		on_button_up(int button, int x, int y, t_mlx_data *mlx);
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: mberger- <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/02 14:07:33 by mberger-          #+#    #+#             */
-/*   Updated: 2021/11/02 14:08:13 by mberger-         ###   ########.fr       */
+/*   Updated: 2021/11/02 16:29:33 by mberger-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,11 +15,15 @@
 #define WIDTH 200
 #define HEIGHT 200
 
+/*void	mlx_malloc_map(char *filename)
+{
+}*/
+
 void	mlx_parse_map(t_mlx_data *mlx, int argc, char **argv)
 {
-	int	x;
-	int	y;
-	int	map[WIDTH * HEIGHT];
+	int			x;
+	int			y;
+	static int	map[WIDTH * HEIGHT];
 
 	(void)argc;
 	(void)argv;
