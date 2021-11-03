@@ -1,7 +1,9 @@
 NAME = fdf
-OBJ = bin/fdf.o bin/math.o bin/mlx.o bin/parsing.o bin/hook.o
+OBJ = bin/fdf.o bin/math.o bin/mlx.o bin/parsing.o bin/hook.o bin/project.o
 BIN = bin
 FLAGS = -Wall -Wextra -Werror
+
+MAP = france.fdf
 
 OS = $$(uname -s)
 
@@ -16,7 +18,7 @@ all: $(NAME)
 
 run: all
 	@$(ECHO) "$(BLU)● Launching $(NAME) 💪$(EOC)"
-	@./$(NAME)
+	@./$(NAME) maps/$(MAP)
 
 bin:
 	@$(ECHO) "$(GRE)● Creating /$(BIN) 📁$(EOC)"

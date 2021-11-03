@@ -6,7 +6,7 @@
 /*   By: mberger- <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/02 14:07:19 by mberger-          #+#    #+#             */
-/*   Updated: 2021/11/02 14:11:38 by mberger-         ###   ########.fr       */
+/*   Updated: 2021/11/03 08:02:28 by mberger-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,23 +26,22 @@ int	min(int a, int b)
 	return (a);
 }
 
-t_vec2	mlx_rotate(t_mlx_data *mlx, t_vec3 p)
+t_vec3	*mlx_rotate(t_mlx_data *mlx, t_vec3 *p)
 {
-	t_vec2	v;
 	float	d[3];
 
-	d[0] = (((float)p.x + .5 + mlx->map.off[0]) / mlx->map.size.z - .5)
+	d[0] = (((float)p->x + .5 + mlx->map.off[0]) / mlx->map.size.z - .5)
 		* mlx->zoom;
-	d[1] = (((float)p.y + .5 + mlx->map.off[1]) / mlx->map.size.z - .5)
+	d[1] = (((float)p->y + .5 + mlx->map.off[1]) / mlx->map.size.z - .5)
 		* mlx->zoom;
-	d[2] = (((float)p.z + .5) / mlx->map.size.z / 25) * mlx->zoom;
-	v.x = (d[0] * mlx->rot.matrix[0][0]
+	d[2] = (((float)p->z + .5) / mlx->map.size.z / 10) * mlx->zoom;
+	p->x = (d[0] * mlx->rot.matrix[0][0]
 			+ d[1] * mlx->rot.matrix[0][1]
 			+ d[2] * mlx->rot.matrix[0][2] + .5) * mlx->width + mlx->pos.x;
-	v.y = (d[0] * mlx->rot.matrix[1][0]
+	p->y = (d[0] * mlx->rot.matrix[1][0]
 			+ d[1] * mlx->rot.matrix[1][1]
 			+ d[2] * mlx->rot.matrix[1][2] + .5) * mlx->height + mlx->pos.y;
-	return (v);
+	return (p);
 }
 
 t_rot	create_rot(float x, float y, float z)

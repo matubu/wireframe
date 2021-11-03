@@ -6,25 +6,11 @@
 /*   By: mberger- <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/02 14:07:06 by mberger-          #+#    #+#             */
-/*   Updated: 2021/11/02 16:25:38 by mberger-         ###   ########.fr       */
+/*   Updated: 2021/11/03 13:34:09 by mberger-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "fdf.h"
-
-void	mlx_draw_3d_line(t_mlx_data *mlx, t_vec2 a, t_vec2 b)
-{
-	const t_vec3	a3 = {
-		a.x, a.y,
-		mlx->map.grid[a.x + a.y * mlx->map.size.x]
-	};
-	const t_vec3	b3 = {
-		b.x, b.y,
-		mlx->map.grid[b.x + b.y * mlx->map.size.x]
-	};
-
-	mlx_draw_line(mlx, mlx_rotate(mlx, a3), mlx_rotate(mlx, b3), 0x00dd88dd);
-}
 
 void	mlx_project(t_mlx_data *mlx)
 {
@@ -55,6 +41,7 @@ void	mlx_update(t_mlx_data *mlx)
 
 int	clean_exit(t_mlx_data *mlx)
 {
+	free(mlx->map.grid);
 	mlx_destroy_window(mlx->ptr, mlx->win);
 	exit(0);
 	return (1);
@@ -72,15 +59,16 @@ void	mlx_init_movement(t_mlx_data *mlx)
 }
 
 //TODO leaks ?
-//TODO bus error
-//TODO parsing
 //TODO other projection with flag
-//TODO color distance camera
+//TODO edit terrain
+//TODO Makefile bonus rule
+//TODO fix gradient
 int	main(int argc, char **argv)
 {
 	t_mlx_data	mlx;
 	int			null;
 
+	mlx_parse_map(&mlx, argc, argv);
 	mlx.ptr = mlx_init();
 	if (mlx.ptr == NULL)
 		return (1);
@@ -93,7 +81,6 @@ int	main(int argc, char **argv)
 	if (mlx.img == NULL)
 		clean_exit(&mlx);
 	mlx.buf = (int *)mlx_get_data_addr(mlx.img, &null, &null, &null);
-	mlx_parse_map(&mlx, argc, argv);
 	mlx_hook(mlx.win, 3, 2, on_key_up, &mlx);
 	mlx_init_movement(&mlx);
 	mlx_update(&mlx);
