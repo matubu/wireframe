@@ -1,9 +1,13 @@
 NAME = fdf
-OBJ = bin/fdf.o bin/math.o bin/mlx.o bin/parsing.o bin/hook.o bin/project.o
+
+OBJ_BOTH = bin/fdf.o bin/math.o bin/mlx.o bin/parsing.o bin/hook.o 
+OBJ_MANDATORY = bin/camera.o
+OBJ_BONUS = bin/camera_bonus.o
+
 BIN = bin
 FLAGS = -Wall -Wextra -Werror
 
-MAP = france.fdf
+DEFAULT_MAP = france.fdf
 
 OS = $$(uname -s)
 
@@ -14,26 +18,34 @@ GRA = \033[37m
 BLU = \033[34m
 EOC = \033[0m
 
-all: $(NAME)
+all: OBJ := $(OBJ_BOTH) $(OBJ_MANDATORY)
+all: OBJ_UNUSED := $(OBJ_BONUS)
+all: $(OBJ_MANDATORY) $(NAME)
 
-run: all
-	@$(ECHO) "$(BLU)● Launching $(NAME) 💪$(EOC)"
-	@./$(NAME) maps/$(MAP)
+bonus: OBJ := $(OBJ_BOTH) $(OBJ_BONUS)
+bonus: OBJ_UNUSED := $(OBJ_MANDATORY)
+bonus: $(OBJ_BONUS) $(NAME)
 
-bin:
-	@$(ECHO) "$(GRE)● Creating /$(BIN) 📁$(EOC)"
-	@mkdir -p $(BIN)
+%.fdf:
+	@$(ECHO) "$(GRE)● Using $@ map to run $(NAME) 🎨$(EOC)"
+	@./$(NAME) maps/$@
+
+run:
+	@$(ECHO) "$(GRE)● Launching $(NAME) 💪$(EOC)"
+	@./$(NAME) maps/$(DEFAULT_MAP)
 
 bin/%.o: %.c
 	@$(ECHO) "$(BLU)● Compiling $^ 🔧$(EOC)"
+	@rm -rf $(NAME) $(OBJ_UNUSED)
+	@mkdir -p $(BIN)
 	@gcc $(FLAGS) -c -I/usr/local/include $^ -o $@
 
-$(NAME): bin $(OBJ)
+$(NAME): $(OBJ_BOTH)
 	@if [ $(OS) = 'Linux' ]; then \
-		$(ECHO) "$(BLU)● Compiling to binary ⚙️  $(GRA)(Linux 🐧 mode)$(EOC)"; \
+		$(ECHO) "$(GRE)● Compiling to binary ⚙️  $(GRA)(Linux 🐧 mode)$(EOC)"; \
 		gcc $(FLAGS) -L/usr/local/lib $(OBJ) -o $(NAME) -lm -lmlx -lXext -lX11 -lz; \
 	else \
-		$(ECHO) "$(BLU)● Compiling to binary ⚙️  $(GRA)(maxOS 🍎 mode)$(EOC)"; \
+		$(ECHO) "$(GRE)● Compiling to binary ⚙️  $(GRA)(maxOS 🍎 mode)$(EOC)"; \
 		gcc $(FLAGS) -l mlx -framework OpenGL -framework AppKit $(OBJ) -o $(NAME) -lm; \
 	fi
 
@@ -47,6 +59,4 @@ fclean: clean
 
 re: fclean all
 
-rerun: fclean run
-
-.PHONY: all run clean fclean re rerun
+.PHONY: all bonus run clean fclean re

@@ -6,7 +6,7 @@
 /*   By: mberger- <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/02 14:07:19 by mberger-          #+#    #+#             */
-/*   Updated: 2021/11/03 08:02:28 by mberger-         ###   ########.fr       */
+/*   Updated: 2021/11/03 14:32:04 by mberger-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,22 @@ int	min(int a, int b)
 	return (a);
 }
 
+int	reduce(int *a)
+{
+	if (*a > 0)
+		return ((*a)--);
+	if (*a < 0)
+		return ((*a)++);
+	return (0);
+}
+
+float	divz(float a, float b)
+{
+	if (b == 0)
+		return (0);
+	return (a / b);
+}
+
 t_vec3	*mlx_rotate(t_mlx_data *mlx, t_vec3 *p)
 {
 	float	d[3];
@@ -42,26 +58,4 @@ t_vec3	*mlx_rotate(t_mlx_data *mlx, t_vec3 *p)
 			+ d[1] * mlx->rot.matrix[1][1]
 			+ d[2] * mlx->rot.matrix[1][2] + .5) * mlx->height + mlx->pos.y;
 	return (p);
-}
-
-t_rot	create_rot(float x, float y, float z)
-{
-	t_rot	r;
-
-	r.x = x;
-	r.y = y;
-	r.z = z;
-	r.cx = cos(x);
-	r.sx = sin(x);
-	r.cy = cos(y);
-	r.sy = sin(y);
-	r.cz = cos(z);
-	r.sz = sin(z);
-	r.matrix[0][0] = r.cx * r.cy;
-	r.matrix[0][1] = r.cx * r.sy * r.sz - r.sx * r.cz;
-	r.matrix[0][2] = r.cx * r.sy * r.cz + r.sx * r.sz;
-	r.matrix[1][0] = r.sx * r.cy;
-	r.matrix[1][1] = r.sx * r.sy * r.sz + r.cx * r.cz;
-	r.matrix[1][2] = r.sx * r.sy * r.cz - r.cx * r.sz;
-	return (r);
 }

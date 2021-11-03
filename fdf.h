@@ -6,7 +6,7 @@
 /*   By: mberger- <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/02 14:07:11 by mberger-          #+#    #+#             */
-/*   Updated: 2021/11/03 13:33:06 by mberger-         ###   ########.fr       */
+/*   Updated: 2021/11/03 14:33:30 by mberger-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,18 +73,19 @@ typedef struct s_mlx_data {
 	t_vec2	pos;
 }	t_mlx_data;
 
-void	mlx_draw_3d_line(t_mlx_data *mlx, t_vec2 a, t_vec2 b);
-
+int		reduce(int *a);
+float	divz(float a, float b);
 int		min(int a, int b);
 int		max(int a, int b);
-t_rot	create_rot(float x, float y, float z);
+
 int		clean_exit(t_mlx_data *mlx);
 
 int		rgb(int r, int g, int b);
-t_vec3	*mlx_rotate(t_mlx_data *mlx, t_vec3 *p);
+void	init_rot(t_rot *r, float x, float y, float z);
 void	mlx_draw_line(t_mlx_data *mlx, t_vec3 *a, t_vec3 *b);
 void	mlx_new_gradient(t_mlx_data *mlx);
 
+t_vec3	*mlx_rotate(t_mlx_data *mlx, t_vec3 *p);
 void	mlx_update(t_mlx_data *mlx);
 void	mlx_parse_map(t_mlx_data *mlx, int argc, char **argv);
 
@@ -92,5 +93,8 @@ int		on_key_up(int key, t_mlx_data *mlx);
 int		on_mouse_move(int x, int y, t_mlx_data *mlx);
 int		on_button_down(int button, int x, int y, t_mlx_data *mlx);
 int		on_button_up(int button, int x, int y, t_mlx_data *mlx);
+
+t_rot	create_rot(float x, float y, float z);
+void	mlx_init_camera(t_mlx_data *mlx);
 
 #endif

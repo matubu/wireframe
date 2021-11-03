@@ -6,7 +6,7 @@
 /*   By: mberger- <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/02 14:07:26 by mberger-          #+#    #+#             */
-/*   Updated: 2021/11/03 10:45:37 by mberger-         ###   ########.fr       */
+/*   Updated: 2021/11/03 14:32:21 by mberger-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,15 +18,6 @@ static inline void	setpix(t_mlx_data *mlx, int x, int y, int rgb)
 		|| y < 0 || y >= mlx->height)
 		return ;
 	mlx->buf[x + y * mlx->width] = rgb;
-}
-
-static inline int	reduce(int *a)
-{
-	if (*a > 0)
-		return ((*a)--);
-	if (*a < 0)
-		return ((*a)++);
-	return (0);
 }
 
 int	mix(const t_vec3 *a, const t_vec3 *b, float fac)
@@ -43,13 +34,6 @@ int	mix(const t_vec3 *a, const t_vec3 *b, float fac)
 		(int)((float)a->y * fac + (float)b->y * inv),
 		(int)((float)a->z * fac + (float)b->z * inv)
 		));
-}
-
-float	divz(float a, float b)
-{
-	if (b == 0)
-		return (0);
-	return (a / b);
 }
 
 void	mlx_draw_line(t_mlx_data *mlx, t_vec3 *a, t_vec3 *b)

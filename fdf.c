@@ -6,11 +6,27 @@
 /*   By: mberger- <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/02 14:07:06 by mberger-          #+#    #+#             */
-/*   Updated: 2021/11/03 13:34:09 by mberger-         ###   ########.fr       */
+/*   Updated: 2021/11/03 13:41:17 by mberger-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "fdf.h"
+
+void	mlx_draw_3d_line(t_mlx_data *mlx, t_vec2 a, t_vec2 b)
+{
+	t_vec3	a3;
+	t_vec3	b3;
+
+	a3 = (t_vec3){
+		a.x, a.y,
+		mlx->map.grid[a.x + a.y * mlx->map.size.x]
+	};
+	b3 = (t_vec3){
+		b.x, b.y,
+		mlx->map.grid[b.x + b.y * mlx->map.size.x]
+	};
+	mlx_draw_line(mlx, mlx_rotate(mlx, &a3), mlx_rotate(mlx, &b3));
+}
 
 void	mlx_project(t_mlx_data *mlx)
 {
@@ -47,17 +63,6 @@ int	clean_exit(t_mlx_data *mlx)
 	return (1);
 }
 
-void	mlx_init_movement(t_mlx_data *mlx)
-{
-	mlx->button = 0;
-	mlx->pos = (t_vec2){0, 0};
-	mlx->zoom = 1;
-	mlx->rot = create_rot(0, PI / 4, PI / 4);
-	mlx_hook(mlx->win, 4, 1 << 2, on_button_down, mlx);
-	mlx_hook(mlx->win, 5, 1 << 3, on_button_up, mlx);
-	mlx_hook(mlx->win, 6, 64, on_mouse_move, mlx);
-}
-
 //TODO leaks ?
 //TODO other projection with flag
 //TODO edit terrain
@@ -82,7 +87,7 @@ int	main(int argc, char **argv)
 		clean_exit(&mlx);
 	mlx.buf = (int *)mlx_get_data_addr(mlx.img, &null, &null, &null);
 	mlx_hook(mlx.win, 3, 2, on_key_up, &mlx);
-	mlx_init_movement(&mlx);
+	mlx_init_camera(&mlx);
 	mlx_update(&mlx);
 	mlx_hook(mlx.win, 17, 0, clean_exit, &mlx);
 	mlx_loop(mlx.ptr);
