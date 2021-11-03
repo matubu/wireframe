@@ -6,7 +6,7 @@
 /*   By: mberger- <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/02 14:07:06 by mberger-          #+#    #+#             */
-/*   Updated: 2021/11/03 13:41:17 by mberger-         ###   ########.fr       */
+/*   Updated: 2021/11/03 14:46:02 by mberger-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,11 +63,6 @@ int	clean_exit(t_mlx_data *mlx)
 	return (1);
 }
 
-//TODO leaks ?
-//TODO other projection with flag
-//TODO edit terrain
-//TODO Makefile bonus rule
-//TODO fix gradient
 int	main(int argc, char **argv)
 {
 	t_mlx_data	mlx;

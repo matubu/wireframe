@@ -6,7 +6,7 @@
 /*   By: mberger- <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/02 14:07:33 by mberger-          #+#    #+#             */
-/*   Updated: 2021/11/03 11:59:52 by mberger-         ###   ########.fr       */
+/*   Updated: 2021/11/03 14:48:18 by mberger-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,13 +49,11 @@ void	mlx_map_size(t_map *map, int fd)
 	map->size.z = map->size.x * map->size.y;
 }
 
-void	mlx_fill_map(t_map *map, int fd)
+void	mlx_fill_map(t_map *map, int fd, int i)
 {
-	int		i;
 	char	buf;
 	int		neg;
 
-	i = 0;
 	while (read(fd, &buf, 1) > 0)
 	{
 		neg = 0;
@@ -96,7 +94,7 @@ void	mlx_parse_map(t_mlx_data *mlx, int argc, char **argv)
 	if (mlx->map.grid == NULL)
 		err(NULL, "could not malloc\n");
 	fd = open(argv[1], O_RDONLY);
-	mlx_fill_map(&mlx->map, fd);
+	mlx_fill_map(&mlx->map, fd, 0);
 	close(fd);
 	mlx->map.size.z = max(mlx->map.size.x, mlx->map.size.y);
 	mlx->map.off[0] = (mlx->map.size.z - mlx->map.size.x) / 2;
