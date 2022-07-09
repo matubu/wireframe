@@ -45,7 +45,7 @@ $(NAME): $(OBJ_BOTH)
 		$(ECHO) "$(GRE)● Compiling to binary ⚙️  $(GRA)(Linux 🐧 mode)$(EOC)"; \
 		gcc $(FLAGS) -L/usr/local/lib $(OBJ) -o $(NAME) -lm -lmlx -lXext -lX11 -lz; \
 	else \
-		$(ECHO) "$(GRE)● Compiling to binary ⚙️  $(GRA)(maxOS 🍎 mode)$(EOC)"; \
+		$(ECHO) "$(GRE)● Compiling to binary ⚙️  $(GRA)(macOS 🍎 mode)$(EOC)"; \
 		gcc $(FLAGS) -l mlx -framework OpenGL -framework AppKit $(OBJ) -o $(NAME) -lm; \
 	fi
 
